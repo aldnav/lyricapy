@@ -26,11 +26,16 @@ def parse_lyrics(text):
 
 
 def get_lyrics(title="", artist=""):
-    title = str(title)
-    artist = str(artist)
     """Get lyrics for a given song via rentanadviser.com"""
-    url = 'http://www.rentanadviser.com/en/subtitles/getsubtitle.aspx?'
-    r = requests.get(url, params=dict(song=title, artist=artist))
+    try:
+        title = title.decode('utf-8')
+        artist = artist.decode('utf-8')
+    except AttributeError:
+        pass
+    title = title.replace(' ', '+')
+    artist = artist.replace(' ', '+')
+    url = 'http://www.rentanadviser.com/en/subtitles/getsubtitle.aspx'
+    r = requests.get(url, params={'artist': artist, 'song': title})
     if r.status_code != 200:
         return None
     if 'No subtitle were found!' in r.text:
@@ -48,7 +53,6 @@ def get_lyrics(title="", artist=""):
     }
     for inp in soup.find_all(id=re.compile('__.*')):
         data[inp.get('name')] = inp.get('value')
-
     r = requests.post(r.url, data=data)
     lyrics = r.text if not r.text.startswith('<html') else ''
     if lyrics == '':
