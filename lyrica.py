@@ -29,6 +29,9 @@ def get_lyrics(title="", artist=""):
     """Get lyrics for a given song via rentanadviser.com"""
     try:
         title = title.decode('utf-8')
+    except AttributeError:
+        pass
+    try:
         artist = artist.decode('utf-8')
     except AttributeError:
         pass
